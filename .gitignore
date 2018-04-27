@@ -42,3 +42,6 @@ src/main/resources/static
 target/
 
 *.log
+/.idea
+/mvnw.cmd
+/mvnw
