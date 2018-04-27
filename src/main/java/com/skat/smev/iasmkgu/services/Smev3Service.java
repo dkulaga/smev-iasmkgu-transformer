@@ -2,8 +2,9 @@ package com.skat.smev.iasmkgu.services;
 
 
 import com.skat.smev.iasmkgu.domain.*;
-import com.skat.smev.iasmkgu.model.SnilsByDataRequest;
-import com.skat.smev.iasmkgu.model.SnilsByDataResponse;
+import com.skat.smev.iasmkgu.model.events.EventsRequest;
+import com.skat.smev.iasmkgu.model.events.EventsResponse;
+import com.skat.smev.iasmkgu.model.rates.RatesRequest;
 import com.skat.smev.iasmkgu.transmitter.impl.ResponseTransmitterService;
 import com.skat.smev.iasmkgu.transmitter.impl.Smev3AdapterService;
 import com.skat.smev.iasmkgu.util.JsonUtil;
@@ -37,12 +38,29 @@ public class Smev3Service {
 
     /**
      * Метод преобразования и отправки запроса от ВИС и отправки в СМЭВ-адаптер
-     * @param requestModel модель запроса в формате JSON
+     * @param eventsRequestModel модель запроса в формате JSON
      * @return  возвращает сведения об успешности отправки запроса
      * @throws Exception
      */
-    public String sendRequest(RequestModel requestModel) throws ParseException, JAXBException, DatatypeConfigurationException {
-        final String adapterRequest = createXmlFromModel(requestModel);
+    public String sendEventsRequest(EventsRequestModel eventsRequestModel) throws ParseException, JAXBException, DatatypeConfigurationException {
+        final String adapterRequest = createEventsXmlFromModel(eventsRequestModel);
+        final String base64request = convertToBase64(adapterRequest);
+        try {
+            return smev3AdapterService.sendRequest(base64request);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "Error while sending request";
+    }
+
+    /**
+     * Метод преобразования и отправки запроса от ВИС и отправки в СМЭВ-адаптер
+     * @param ratesRequestModel модель запроса в формате JSON
+     * @return  возвращает сведения об успешности отправки запроса
+     * @throws Exception
+     */
+    public String sendRatesRequest(RatesRequestModel ratesRequestModel) throws ParseException, JAXBException, DatatypeConfigurationException {
+        final String adapterRequest = createRatesXmlFromModel(ratesRequestModel);
         final String base64request = convertToBase64(adapterRequest);
         try {
             return smev3AdapterService.sendRequest(base64request);
@@ -105,17 +123,33 @@ public class Smev3Service {
      * @throws ParseException
      * @throws DatatypeConfigurationException
      */
-    private String createXmlFromModel(RequestModel model) throws JAXBException,
+    private String createEventsXmlFromModel(EventsRequestModel model) throws JAXBException,
             ParseException, DatatypeConfigurationException {
         IasmkguRequestTransformer iasmkguRequestTransformer = new IasmkguRequestTransformer();
-        SnilsByDataRequest element = iasmkguRequestTransformer.createSnilsByDataRequest(model);
-        String xml = XmlUtil.jaxbObjectToXML(element);
+        EventsRequest element = iasmkguRequestTransformer.createEventsRequest(model);
+        String xml = XmlUtil.jaxbObjectToXML(element, EventsRequest.class);
+        return xml;
+    }
+
+     /* Метод выпоняет преобразование модели запроса от ВИС в формате SON
+     * в модель вида сведений
+     * @param model модель запроса от ВИС
+     * @return  преобразованная модель вида сведений
+     * @throws JAXBException
+     * @throws ParseException
+     * @throws DatatypeConfigurationException
+     */
+    private String createRatesXmlFromModel(RatesRequestModel model) throws JAXBException,
+            ParseException, DatatypeConfigurationException {
+        IasmkguRequestTransformer iasmkguRequestTransformer = new IasmkguRequestTransformer();
+        RatesRequest element = iasmkguRequestTransformer.createRatesRequest(model);
+        String xml = XmlUtil.jaxbObjectToXML(element, RatesRequest.class);
         return xml;
     }
 
     /**
      * Метод выполняет преобразование ответа от СМЭВ-адаптера
-     * из формата {@link SnilsByDataResponse} в формат {@link BaseMessageModel}
+     * из формата {@link EventsRequest} в формат {@link BaseMessageModel}
      * @param adapterResponseModel ответ от СМЭВ-адаптера
      * @return формированный ответ для дальнейшей отправки в ВИС
      * @throws Exception
@@ -127,8 +161,8 @@ public class Smev3Service {
         if(adapterResponseModel.getResponse() != null){
             String xml = getXmlFromBase64(adapterResponseModel.getResponse());
             IasmkguRequestTransformer iasmkguRequestTransformer = new IasmkguRequestTransformer();
-            SnilsByDataResponse responseType = iasmkguRequestTransformer.parseContent(xml);
-            String responseNumber = String.valueOf(responseType.getSnils());
+            EventsResponse responseType = iasmkguRequestTransformer.parseContent(xml);
+            String responseNumber = String.valueOf(responseType.getPacket().getId());
             ResponseMessageModel responseMessageModel = new ResponseMessageModel();
             responseMessageModel.setResponseNumber(responseNumber);
             responseMessageModel.setMessageId(adapterResponseModel.getMessageId());

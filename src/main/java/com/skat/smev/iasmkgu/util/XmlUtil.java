@@ -1,6 +1,6 @@
 package com.skat.smev.iasmkgu.util;
 
-import com.skat.smev.iasmkgu.model.SnilsByDataRequest;
+import com.skat.smev.iasmkgu.model.events.EventsRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -33,22 +33,18 @@ public class XmlUtil {
 		return sw.toString();
 	}
 
-	public static String jaxbObjectToXML(SnilsByDataRequest request) {
+	public static <T> String  jaxbObjectToXML(Object request, Class<T> type) {
 		String xmlString = "";
 		try {
-			JAXBContext context = JAXBContext.newInstance(SnilsByDataRequest.class);
+			JAXBContext context = JAXBContext.newInstance(type);
 			Marshaller m = context.createMarshaller();
-
 			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE); // To format XML
-
 			StringWriter sw = new StringWriter();
 			m.marshal(request, sw);
 			xmlString = sw.toString();
-
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-
 		return xmlString;
 	}
 

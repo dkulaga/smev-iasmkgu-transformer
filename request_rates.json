@@ -1,0 +1,72 @@
+{
+	"vendorId": "601",
+	"forms": [{
+		"mkguId": "0",
+		"foreignId": "1",
+		"formData": {
+			"userId": "241263393",
+			"userEmail": "data@mask.ed",
+			"authorityId": "10000001197",
+			"authorityName": "Министерство внутренних дел Российской Федерации",
+			"serviceId": "10001260640",
+			"serviceName": "Выдача справок о реабилитации жертв политических репрессий",
+			"procedureId": "10001260851",
+			"procedureName": "Получение справки о реабилитации жертв политических репрессий",
+			"okato": "00000000000"
+		},
+		"rates": [{
+				"indicatorId": "1",
+				"valueId": "4",
+				"value": "1"
+			},
+			{
+				"indicatorId": "2",
+				"valueId": "8",
+				"value": "1"
+			},
+			{
+				"indicatorId": "3",
+				"valueId": "13",
+				"value": "1"
+			},
+			{
+				"indicatorId": "4",
+				"valueId": "18",
+				"value": "1"
+			},
+			{
+				"indicatorId": "5",
+				"valueId": "23",
+				"value": "1"
+			},
+			{
+				"indicatorId": "6",
+				"valueId": "28",
+				"value": "1"
+			}
+		]
+	}],
+	"events": [{
+			"foreignId": "1",
+			"mobile": "+79160000000",
+			"email": "test@vashkontrol.ru",
+			"authorityId": "10000001197",
+			"serviceId": "10001260640",
+			"serviceName": "Справка о реабилитации жертв политических репрессий",
+			"procedureId": "10001260851",
+			"procedureName": "Получение справки о реабилитации жертв политических репрессий",
+			"okato": "79000000000"
+		},
+		{
+			"foreignId": "1",
+			"mobile": "+79160000000",
+			"email": "test@vashkontrol.ru",
+			"authorityId": "10000001197",
+			"serviceId": "10001260640",
+			"serviceName": "Справка о реабилитации жертв политических репрессий",
+			"procedureId": "10001260851",
+			"procedureName": "Получение справки о реабилитации жертв политических репрессий",
+			"okato": "79000000000"
+		}
+	]
+}

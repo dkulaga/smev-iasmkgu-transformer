@@ -1,7 +1,28 @@
 {
-  "familyName" : "ПЕТИНА",
-  "firstName" : "ЕЛЕНА",
-  "patronymic" : "ВЛАДИМИРОВНА",
-  "gender" : "FEMALE",
-  "birthDate" : "1966-09-12"
+	"vendorId" : "999",
+	"listVersion" : "0.0.0",
+	"events" : [
+		{
+			"foreignId" : "1",
+			"mobile" : "+79160000000",
+			"email" : "test@vashkontrol.ru",
+			"authorityId" : "10000001197",
+			"serviceId" : "10001260640",
+			"serviceName" : "Справка о реабилитации жертв политических репрессий",
+			"procedureId" : "10001260851",
+			"procedureName" : "Получение справки о реабилитации жертв политических репрессий",
+			"okato" : "79000000000"
+		},
+		{
+			"foreignId" : "1",
+			"mobile" : "+79160000000",
+			"email" : "test@vashkontrol.ru",
+			"authorityId" : "10000001197",
+			"serviceId" : "10001260640",
+			"serviceName" : "Справка о реабилитации жертв политических репрессий",
+			"procedureId" : "10001260851",
+			"procedureName" : "Получение справки о реабилитации жертв политических репрессий",
+			"okato" : "79000000000"
+		}
+	]
 }
