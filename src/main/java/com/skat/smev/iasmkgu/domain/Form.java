@@ -2,10 +2,6 @@ package com.skat.smev.iasmkgu.domain;
 
 import java.util.List;
 
-/**
- * @author daria.kulaga
- * @since 27.04.2018.
- */
 public class Form {
     private String mkguId;
     private String foreignId;

@@ -1,9 +1,5 @@
 package com.skat.smev.iasmkgu.domain;
 
-/**
- * @author daria.kulaga
- * @since 27.04.2018.
- */
 public class Rate {
     private String indicatorId;
     private String valueId;
