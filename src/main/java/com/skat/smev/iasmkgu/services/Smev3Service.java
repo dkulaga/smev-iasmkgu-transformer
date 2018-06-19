@@ -42,16 +42,16 @@ public class Smev3Service {
      * @return  возвращает сведения об успешности отправки запроса
      * @throws Exception
      */
-    public String sendEventsRequest(EventsRequestModel eventsRequestModel) throws ParseException, JAXBException, DatatypeConfigurationException {
-        final String adapterRequest = createEventsXmlFromModel(eventsRequestModel);
-        final String base64request = convertToBase64(adapterRequest);
-        try {
-            return smev3AdapterService.sendRequest(base64request);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return "Error while sending request";
-    }
+//    public String sendEventsRequest(EventsRequestModel eventsRequestModel) throws ParseException, JAXBException, DatatypeConfigurationException {
+//        final String adapterRequest = createEventsXmlFromModel(eventsRequestModel);
+//        final String base64request = convertToBase64(adapterRequest);
+//        try {
+//            return smev3AdapterService.sendRequest(base64request);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return "Error while sending request";
+//    }
 
     /**
      * Метод преобразования и отправки запроса от ВИС и отправки в СМЭВ-адаптер
@@ -62,6 +62,23 @@ public class Smev3Service {
     public String sendRatesRequest(RatesRequestModel ratesRequestModel) throws ParseException, JAXBException, DatatypeConfigurationException {
         final String adapterRequest = createRatesXmlFromModel(ratesRequestModel);
         final String base64request = convertToBase64(adapterRequest);
+        try {
+            return smev3AdapterService.sendRequest(base64request);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "Error while sending request";
+    }
+
+    /**
+     * Метод отправки запроса от ВИС и отправки в СМЭВ-адаптер
+     * @param ratesRequest модель запроса в формате XML
+     * @return  возвращает сведения об успешности отправки запроса
+     * @throws Exception
+     */
+    public String sendRatesRequest(RatesRequest ratesRequest) throws ParseException, JAXBException, DatatypeConfigurationException {
+        String xml = XmlUtil.ratesJaxbObjectToXML(ratesRequest);
+        final String base64request = convertToBase64(xml);
         try {
             return smev3AdapterService.sendRequest(base64request);
         } catch (JSONException e) {
@@ -123,13 +140,13 @@ public class Smev3Service {
      * @throws ParseException
      * @throws DatatypeConfigurationException
      */
-    private String createEventsXmlFromModel(EventsRequestModel model) throws JAXBException,
-            ParseException, DatatypeConfigurationException {
-        IasmkguRequestTransformer iasmkguRequestTransformer = new IasmkguRequestTransformer();
-        EventsRequest element = iasmkguRequestTransformer.createEventsRequest(model);
-        String xml = XmlUtil.jaxbObjectToXML(element, EventsRequest.class);
-        return xml;
-    }
+//    private String createEventsXmlFromModel(EventsRequestModel model) throws JAXBException,
+//            ParseException, DatatypeConfigurationException {
+//        IasmkguRequestTransformer iasmkguRequestTransformer = new IasmkguRequestTransformer();
+//        EventsRequest element = iasmkguRequestTransformer.createEventsRequest(model);
+//        String xml = XmlUtil.jaxbObjectToXML(element, EventsRequest.class);
+//        return xml;
+//    }
 
      /* Метод выпоняет преобразование модели запроса от ВИС в формате SON
      * в модель вида сведений
@@ -142,7 +159,7 @@ public class Smev3Service {
     private String createRatesXmlFromModel(RatesRequestModel model) throws JAXBException,
             ParseException, DatatypeConfigurationException {
         IasmkguRequestTransformer iasmkguRequestTransformer = new IasmkguRequestTransformer();
-        RatesRequest element = iasmkguRequestTransformer.createRatesRequest(model);
+        RatesRequest element = iasmkguRequestTransformer.createRatesRequestFromModel(model);
         String xml = XmlUtil.jaxbObjectToXML(element, RatesRequest.class);
         return xml;
     }

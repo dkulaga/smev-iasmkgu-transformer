@@ -15,6 +15,14 @@ public class RatesRequestModel {
 		return vendorId;
 	}
 
+	public void setVendorId(String vendorId) {
+		this.vendorId = vendorId;
+	}
+
+	public void setForms(List<Form> forms) {
+		this.forms = forms;
+	}
+
 	public List<Form> getForms() {
 		return forms;
 	}

@@ -28,10 +28,10 @@ public class Smev3Controller {
      * @return  возвращает сведения об успешности отправки запроса
      * @throws Exception
      */
-    @PostMapping("/events/request")
-    public String sendEventsRequest(@RequestBody EventsRequestModel request) throws Exception {
-        return smev3Service.sendEventsRequest(request);
-    }
+//    @PostMapping("/events/request")
+//    public String sendEventsRequest(@RequestBody EventsRequestModel request) throws Exception {
+//        return smev3Service.sendEventsRequest(request);
+//    }
 
     /**
      * Метод преобразования запроса ля сервиса

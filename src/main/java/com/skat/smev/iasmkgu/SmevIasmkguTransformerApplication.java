@@ -2,6 +2,7 @@ package com.skat.smev.iasmkgu;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 
 @SpringBootApplication
@@ -13,10 +14,10 @@ public class SmevIasmkguTransformerApplication extends SpringBootServletInitiali
 
 //	@Override
 //	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-//		return application.sources(SmevSnilsTransformerApplication.class);
+//		return application.sources(SmevIasmkguTransformerApplication.class);
 //	}
 //
 //	public static void main(String[] args) throws Exception {
-//		SpringApplication.run(SmevSnilsTransformerApplication.class, args);
+//		SpringApplication.run(SmevIasmkguTransformerApplication.class, args);
 //	}
 }

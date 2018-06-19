@@ -1,6 +1,7 @@
 package com.skat.smev.iasmkgu.util;
 
 import com.skat.smev.iasmkgu.model.events.EventsRequest;
+import com.skat.smev.iasmkgu.model.rates.RatesRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -45,6 +46,24 @@ public class XmlUtil {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
+		return xmlString;
+	}
+	public static String ratesJaxbObjectToXML(RatesRequest request) {
+		String xmlString = "";
+		try {
+			JAXBContext context = JAXBContext.newInstance(RatesRequest.class);
+			Marshaller m = context.createMarshaller();
+
+			m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE); // To format XML
+
+			StringWriter sw = new StringWriter();
+			m.marshal(request, sw);
+			xmlString = sw.toString();
+
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+
 		return xmlString;
 	}
 
