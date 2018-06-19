@@ -4,7 +4,6 @@ package com.skat.smev.iasmkgu.schedulers;
 import com.skat.smev.iasmkgu.controllers.MkguFromPackageController;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,10 +27,6 @@ public class MkguScheduler {
     @Autowired
     private MkguFromPackageController mkguFromPackageController;
 
-    @Value("${mkgu.vendorId}")
-    private String vendorId;
-    @Value("${mkgu.listVersion}")
-    private String listVersion;
 
     public MkguScheduler(MkguFromPackageController mkguFromPackageController) {
         this.mkguFromPackageController = mkguFromPackageController;

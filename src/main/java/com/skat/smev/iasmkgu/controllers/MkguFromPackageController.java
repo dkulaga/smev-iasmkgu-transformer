@@ -14,8 +14,7 @@ import com.skat.smev.iasmkgu.services.impl.MkguFromPackageService;
 import com.skat.smev.iasmkgu.util.DateUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +24,9 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +38,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/db")
 public class MkguFromPackageController {
+
+
+    @Value("${mkgu.dateFrom:2018-01-01}")
+    private String dateFromStr;
 
     private static final Logger LOGGER = Logger.getLogger(MkguFromPackageController.class.getName());
     private final List<SendedPackageInfo> sendedPackageInfoList = new ArrayList<>();
@@ -87,31 +92,71 @@ public class MkguFromPackageController {
         prepareRequestAndSend(mkguFromHistoryPackageService);
     }
 
+    private Date getDate(String strDate){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        try {
+            date = sdf.parse(strDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+
+    private Date getDateBefore(Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, -1);
+        return calendar.getTime();
+    }
+
+    private Date getDateAfter(Date date){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, 1);
+        return calendar.getTime();
+    }
+
     private void prepareRequestAndSend(MkguBasePackageService mkguBasePackageService){
-        // находим список всех возможных mkgu_id для создания отдельных xml-запросов
-        final List<String> allMkguIds = mkguBasePackageService.findAllMkguIdsFromPackets();
-        if(allMkguIds.isEmpty()){
-            LOGGER.info("Could not find not sended packages!");
-            return;
+        Date dateFrom = getDateBefore(new Date());
+        Date currentDate = new Date();
+        if(dateFromStr != null){
+            dateFrom = getDate(dateFromStr);
         }
-        for (String mkguId : allMkguIds) {
-            RatesRequest ratesRequest = null;
-            try {
-                ratesRequest = prepareRatesRequest(mkguId, mkguBasePackageService);
-            } catch (DatatypeConfigurationException e) {
-                LOGGER.error("Error while preparing request for mkgu_id = " + mkguId + " :" + e.getMessage());
-                continue;
+        // формируем пакеты для отправки по дням
+        while(dateFrom.before(currentDate)){
+            Date dateTo = getDateAfter(dateFrom);
+            LOGGER.info("Try to find packages from " + dateFrom + " to " + dateTo);
+            // находим список всех возможных mkgu_id для создания отдельных xml-запросов за период
+            final List<String> allMkguIds = mkguBasePackageService.findAllMkguIdsFromPackets(dateFrom, dateTo);
+            if(allMkguIds.isEmpty()){
+                LOGGER.info("Could not find packages for period!");
+                return;
             }
-            try {
-                smev3Service.sendRatesRequest(ratesRequest);
-            } catch (ParseException | DatatypeConfigurationException | JAXBException e) {
-                LOGGER.error("Error while trying to send request for mkgu_id = " + mkguId + " from mkgu_packets_view :" + e.getMessage());
-                continue;
+            for (String mkguId : allMkguIds) {
+                RatesRequest ratesRequest = null;
+                try {
+                    ratesRequest = prepareRatesRequest(mkguId, mkguBasePackageService, dateFrom, dateTo);
+                } catch (DatatypeConfigurationException e) {
+                    LOGGER.error("Error while preparing request for mkgu_id = " + mkguId + " :" + e.getMessage());
+                    continue;
+                }
+                try {
+                    smev3Service.sendRatesRequest(ratesRequest);
+                } catch (ParseException | DatatypeConfigurationException | JAXBException e) {
+                    LOGGER.error("Error while trying to send request for mkgu_id = " + mkguId + " from mkgu_packets_view :" + e.getMessage());
+                    continue;
+                }
+                for (SendedPackageInfo sendedPackageInfo : sendedPackageInfoList) {
+                    qualHistoryService.updateHistoryByIdKeyAndIdOtdel(sendedPackageInfo.getId_key(), sendedPackageInfo.getId_otdel());
+                }
             }
-            for (SendedPackageInfo sendedPackageInfo : sendedPackageInfoList) {
-                qualHistoryService.updateHistoryByIdKeyAndIdOtdel(sendedPackageInfo.getId_key(), sendedPackageInfo.getId_otdel());
-            }
+
+            // смещаем день начала периода на день конца предыдущего периода
+            dateFrom = dateTo;
         }
+
+
     }
 
     /**
@@ -120,16 +165,15 @@ public class MkguFromPackageController {
      * @return готовый к отправке объект запроса
      * @throws DatatypeConfigurationException
      */
-    private RatesRequest prepareRatesRequest(String mkguId, MkguBasePackageService mkguBasePackageService) throws DatatypeConfigurationException {
+    private RatesRequest prepareRatesRequest(String mkguId, MkguBasePackageService mkguBasePackageService, Date dateFrom, Date dateTo) throws DatatypeConfigurationException {
         ObjectFactory factory = new ObjectFactory();
         sendedPackageInfoList.clear();
-        final Pageable pageable = new PageRequest(0, 5);
         RatesRequest ratesRequest = factory.createRatesRequest();
 
         // заполняем базовые данные запроса
         // id_mkgu - это vendor_id
         // данные для vendor_id из поля id_mkgu не проходят валидацию по xsd-схеме rates.xsd
-        // !!!!схема в проекте скорректирована!!!!
+        // поэтому обрезаем mkgu_id до "-"
         VendorType vendor = factory.createVendorType();
         String formattedMkguId = mkguId.split("-")[0];
         vendor.setId(BigInteger.valueOf(Long.valueOf(formattedMkguId)));
@@ -137,7 +181,7 @@ public class MkguFromPackageController {
 
         RatesRequest.Forms forms = factory.createRatesRequestForms();
         // по каждому mkgu_id ищем список id_key для дальнейшего формирования блоков сообщений Form
-        final List<MkguIds> packetsGrouppedByIdKey = mkguBasePackageService.findPacketsByIdMkguGroupByIdKey(mkguId, pageable);
+        final List<MkguIds> packetsGrouppedByIdKey = mkguBasePackageService.findPacketsByIdMkguGroupByIdKey(mkguId, dateFrom, dateTo);
         if(packetsGrouppedByIdKey.isEmpty()){
             return null;
         }
@@ -203,8 +247,11 @@ public class MkguFromPackageController {
         serviceType.setValue(mkguFormInfo.getName_service());
         dataType.setService(serviceType);
 
+        // так как у нас нет данных по процедуре, то берем значения из услуги, чтобы запрос был корректно провалидирован ИАСМКГУ
+        // поле procedure обязательное в запросе
         ProcedureType procedureType = factory.createProcedureType();
-        procedureType.setId("");
+        procedureType.setId(mkguFormInfo.getId_service());
+        procedureType.setValue(mkguFormInfo.getName_service());
         dataType.setProcedure(procedureType);
 
         dataType.setOkato(mkguFormInfo.getOkato());

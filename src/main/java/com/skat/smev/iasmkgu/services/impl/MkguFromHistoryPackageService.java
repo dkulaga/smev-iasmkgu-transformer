@@ -1,11 +1,13 @@
 package com.skat.smev.iasmkgu.services.impl;
 
-import com.skat.smev.iasmkgu.domain.mkgu.views.*;
+import com.skat.smev.iasmkgu.domain.mkgu.views.BaseMkguPacketsView;
+import com.skat.smev.iasmkgu.domain.mkgu.views.MkguFormInfo;
+import com.skat.smev.iasmkgu.domain.mkgu.views.MkguIds;
 import com.skat.smev.iasmkgu.repository.MkguFromHistoryPacketsRepository;
 import com.skat.smev.iasmkgu.services.MkguBasePackageService;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -29,8 +31,8 @@ public class MkguFromHistoryPackageService implements MkguBasePackageService {
      * Метод для поиска списка всех возможных уникальных mkgu_id для дальнейшего формирования в отдельные запросы
      * @return
      */
-    public List<String> findAllMkguIdsFromPackets(){
-        return mkguFromHistoryPacketsRepository.findAllIdMkgu();
+    public List<String> findAllMkguIdsFromPackets(Date dateFrom, Date dateTo){
+        return mkguFromHistoryPacketsRepository.findAllIdMkgu(dateFrom, dateTo);
     }
 
     /**
@@ -38,8 +40,8 @@ public class MkguFromHistoryPackageService implements MkguBasePackageService {
      * @param id_mkgu
      * @return
      */
-    public List<MkguIds> findPacketsByIdMkguGroupByIdKey(String id_mkgu, Pageable pageable){
-        return mkguFromHistoryPacketsRepository.findPacketsByIdMkguGroupByIdKey(id_mkgu, pageable);
+    public List<MkguIds> findPacketsByIdMkguGroupByIdKey(String id_mkgu, Date dateFrom, Date dateTo){
+        return mkguFromHistoryPacketsRepository.findPacketsByIdMkguGroupByIdKey(id_mkgu, dateFrom, dateTo);
     }
 
     /**

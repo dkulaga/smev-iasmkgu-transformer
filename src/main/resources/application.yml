@@ -15,11 +15,12 @@ transmitter:
 # schedule format: second, minute, hour, day of month, month, day of week
 mkgu:
   scheduling:
-    rates: 0 37 16 * * *
+    rates: 0 51 23 * * *
     enable: true
   vendorId: 999
   listVersion: 0.0.0
   foreignId: 1
+  dateFrom: 2018-02-17
 
 spring:
   datasource:
