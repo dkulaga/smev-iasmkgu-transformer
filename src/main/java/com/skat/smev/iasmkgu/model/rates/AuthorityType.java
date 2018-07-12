@@ -12,12 +12,12 @@ import javax.xml.bind.annotation.*;
 
 
 /**
- * <p>Java class for AuthorityType complex type.
+ * <p>Java class for EventsAuthorityType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="AuthorityType">
+ * &lt;complexType name="EventsAuthorityType">
  *   &lt;simpleContent>
  *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
  *       &lt;attribute name="id" use="required" type="{http://vashkontrol.ru/service/common/types/1.1.0}regId" />

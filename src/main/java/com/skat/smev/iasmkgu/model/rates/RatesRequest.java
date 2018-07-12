@@ -48,7 +48,7 @@ import java.util.List;
  *                               &lt;/complexType>
  *                             &lt;/element>
  *                           &lt;/sequence>
- *                           &lt;attribute name="mkgu-id" type="{http://www.w3.org/2001/XMLSchema}integer" />
+ *                           &lt;attribute name="db-id" type="{http://www.w3.org/2001/XMLSchema}integer" />
  *                           &lt;attribute name="foreign-id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *                         &lt;/restriction>
  *                       &lt;/complexContent>
@@ -157,7 +157,7 @@ public class RatesRequest {
      *                     &lt;/complexType>
      *                   &lt;/element>
      *                 &lt;/sequence>
-     *                 &lt;attribute name="mkgu-id" type="{http://www.w3.org/2001/XMLSchema}integer" />
+     *                 &lt;attribute name="db-id" type="{http://www.w3.org/2001/XMLSchema}integer" />
      *                 &lt;attribute name="foreign-id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
      *               &lt;/restriction>
      *             &lt;/complexContent>
@@ -233,7 +233,7 @@ public class RatesRequest {
          *           &lt;/complexType>
          *         &lt;/element>
          *       &lt;/sequence>
-         *       &lt;attribute name="mkgu-id" type="{http://www.w3.org/2001/XMLSchema}integer" />
+         *       &lt;attribute name="db-id" type="{http://www.w3.org/2001/XMLSchema}integer" />
          *       &lt;attribute name="foreign-id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
          *     &lt;/restriction>
          *   &lt;/complexContent>
@@ -252,7 +252,7 @@ public class RatesRequest {
             protected DataType data;
             @XmlElement(required = true)
             protected RatesRequest.Forms.Form.Rates rates;
-            @XmlAttribute(name = "mkgu-id")
+            @XmlAttribute(name = "db-id")
             protected BigInteger mkguId;
             @XmlAttribute(name = "foreign-id", required = true)
             protected String foreignId;

@@ -1,6 +1,6 @@
 # порт, на котором будет запущен сервис
-server:
-  port: 8088
+#server:
+#  port: 8088
 
 # адрес сервиса СМЭВ-адаптера
 adapter:
@@ -12,27 +12,5 @@ transmitter:
     service:
         url: http://192.168.1.201:8093/gen/receiver.php
 
-# schedule format: second, minute, hour, day of month, month, day of week
-mkgu:
-  scheduling:
-    rates: 0 51 23 * * *
-    enable: true
-  vendorId: 999
-  listVersion: 0.0.0
-  foreignId: 1
-  dateFrom: 2018-02-17
 
-spring:
-  datasource:
-    url: jdbc:sqlserver://77.233.7.246:1433;databaseName=dbqueue_joint
-    username: o.bovyka
-    password: queue
-    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
-  jpa:
-    show-sql: true
-#    hibernate:
-#      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.SQLServer2012Dialect
 

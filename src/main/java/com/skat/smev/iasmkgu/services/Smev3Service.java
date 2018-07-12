@@ -2,14 +2,23 @@ package com.skat.smev.iasmkgu.services;
 
 
 import com.skat.smev.iasmkgu.domain.*;
+import com.skat.smev.iasmkgu.domain.events.EventsRequestModel;
+import com.skat.smev.iasmkgu.domain.forms.FormsRequestModel;
+import com.skat.smev.iasmkgu.domain.packets.PacketsRequestModel;
+import com.skat.smev.iasmkgu.domain.rates.RatesRequestModel;
 import com.skat.smev.iasmkgu.model.events.EventsRequest;
 import com.skat.smev.iasmkgu.model.events.EventsResponse;
+import com.skat.smev.iasmkgu.model.forms.FormsRequest;
+import com.skat.smev.iasmkgu.model.packets.PacketsRequest;
 import com.skat.smev.iasmkgu.model.rates.RatesRequest;
+import com.skat.smev.iasmkgu.transform.EventsTransformer;
+import com.skat.smev.iasmkgu.transform.FormsTransformer;
+import com.skat.smev.iasmkgu.transform.PacketsTransformer;
+import com.skat.smev.iasmkgu.transform.RatesTransformer;
 import com.skat.smev.iasmkgu.transmitter.impl.ResponseTransmitterService;
 import com.skat.smev.iasmkgu.transmitter.impl.Smev3AdapterService;
 import com.skat.smev.iasmkgu.util.JsonUtil;
 import com.skat.smev.iasmkgu.util.XmlUtil;
-import com.skat.smev.iasmkgu.util.snils.IasmkguRequestTransformer;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,16 +51,16 @@ public class Smev3Service {
      * @return  возвращает сведения об успешности отправки запроса
      * @throws Exception
      */
-//    public String sendEventsRequest(EventsRequestModel eventsRequestModel) throws ParseException, JAXBException, DatatypeConfigurationException {
-//        final String adapterRequest = createEventsXmlFromModel(eventsRequestModel);
-//        final String base64request = convertToBase64(adapterRequest);
-//        try {
-//            return smev3AdapterService.sendRequest(base64request);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return "Error while sending request";
-//    }
+    public String sendEventsRequest(EventsRequestModel eventsRequestModel) throws ParseException, JAXBException, DatatypeConfigurationException {
+        final String adapterRequest = createEventsXmlFromModel(eventsRequestModel);
+        final String base64request = convertToBase64(adapterRequest);
+        try {
+            return smev3AdapterService.sendRequest(base64request);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "Error while sending request";
+    }
 
     /**
      * Метод преобразования и отправки запроса от ВИС и отправки в СМЭВ-адаптер
@@ -71,14 +80,51 @@ public class Smev3Service {
     }
 
     /**
+     * Метод преобразования и отправки запроса от ВИС и отправки в СМЭВ-адаптер
+     * @param packetsRequestModel модель запроса в формате JSON
+     * @return  возвращает сведения об успешности отправки запроса
+     * @throws Exception
+     */
+    public String sendPacketsRequest(PacketsRequestModel packetsRequestModel) throws ParseException, JAXBException, DatatypeConfigurationException {
+        final String adapterRequest = createPacketsXmlFromModel(packetsRequestModel);
+        final String base64request = convertToBase64(adapterRequest);
+        try {
+            return smev3AdapterService.sendRequest(base64request);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "Error while sending request";
+    }
+
+    /**
+     * Метод преобразования и отправки запроса от ВИС и отправки в СМЭВ-адаптер
+     * @param formsRequestModel модель запроса в формате JSON
+     * @return  возвращает сведения об успешности отправки запроса
+     * @throws Exception
+     */
+    public String sendFormsRequest(FormsRequestModel formsRequestModel) throws ParseException, JAXBException, DatatypeConfigurationException {
+        final String adapterRequest = createFormsXmlFromModel(formsRequestModel);
+        final String base64request = convertToBase64(adapterRequest);
+        try {
+            return smev3AdapterService.sendRequest(base64request);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "Error while sending request";
+    }
+
+    /**
      * Метод отправки запроса от ВИС и отправки в СМЭВ-адаптер
      * @param ratesRequest модель запроса в формате XML
      * @return  возвращает сведения об успешности отправки запроса
      * @throws Exception
      */
     public String sendRatesRequest(RatesRequest ratesRequest) throws ParseException, JAXBException, DatatypeConfigurationException {
+        LOGGER.info("sendRatesRequest started");
         String xml = XmlUtil.ratesJaxbObjectToXML(ratesRequest);
+        LOGGER.info("ratesJaxbObjectToXML success: "+xml);
         final String base64request = convertToBase64(xml);
+        LOGGER.info("base64request success: "+base64request);
         try {
             return smev3AdapterService.sendRequest(base64request);
         } catch (JSONException e) {
@@ -140,13 +186,12 @@ public class Smev3Service {
      * @throws ParseException
      * @throws DatatypeConfigurationException
      */
-//    private String createEventsXmlFromModel(EventsRequestModel model) throws JAXBException,
-//            ParseException, DatatypeConfigurationException {
-//        IasmkguRequestTransformer iasmkguRequestTransformer = new IasmkguRequestTransformer();
-//        EventsRequest element = iasmkguRequestTransformer.createEventsRequest(model);
-//        String xml = XmlUtil.jaxbObjectToXML(element, EventsRequest.class);
-//        return xml;
-//    }
+    private String createEventsXmlFromModel(EventsRequestModel model) throws JAXBException,
+            ParseException, DatatypeConfigurationException {
+        final EventsTransformer eventsTransformer = new EventsTransformer();
+        final EventsRequest element = eventsTransformer.createEventsRequest(model);
+        return XmlUtil.jaxbObjectToXML(element, EventsRequest.class);
+    }
 
      /* Метод выпоняет преобразование модели запроса от ВИС в формате SON
      * в модель вида сведений
@@ -158,10 +203,39 @@ public class Smev3Service {
      */
     private String createRatesXmlFromModel(RatesRequestModel model) throws JAXBException,
             ParseException, DatatypeConfigurationException {
-        IasmkguRequestTransformer iasmkguRequestTransformer = new IasmkguRequestTransformer();
-        RatesRequest element = iasmkguRequestTransformer.createRatesRequestFromModel(model);
-        String xml = XmlUtil.jaxbObjectToXML(element, RatesRequest.class);
-        return xml;
+        final RatesTransformer ratesTransformer = new RatesTransformer();
+        final RatesRequest element = ratesTransformer.createRatesRequestFromModel(model);
+        return XmlUtil.jaxbObjectToXML(element, RatesRequest.class);
+    }
+
+    /* Метод выпоняет преобразование модели запроса от ВИС в формате SON
+     * в модель вида сведений
+     * @param model модель запроса от ВИС
+     * @return  преобразованная модель вида сведений {@link PacketsRequest}
+     * @throws JAXBException
+     * @throws ParseException
+     * @throws DatatypeConfigurationException
+     */
+    private String createPacketsXmlFromModel(PacketsRequestModel model) throws JAXBException,
+            ParseException, DatatypeConfigurationException {
+        final PacketsTransformer packetsTransformer = new PacketsTransformer();
+        final PacketsRequest element = packetsTransformer.createPacketsRequestFromModel(model);
+        return XmlUtil.jaxbObjectToXML(element, PacketsRequest.class);
+    }
+
+    /* Метод выпоняет преобразование модели запроса от ВИС в формате SON
+     * в модель вида сведений
+     * @param model модель запроса от ВИС
+     * @return  преобразованная модель вида сведений {@link PacketsRequest}
+     * @throws JAXBException
+     * @throws ParseException
+     * @throws DatatypeConfigurationException
+     */
+    private String createFormsXmlFromModel(FormsRequestModel model) throws JAXBException,
+            ParseException, DatatypeConfigurationException {
+        final FormsTransformer formsTransformer = new FormsTransformer();
+        final FormsRequest element = formsTransformer.createFormsRequestFromModel(model);
+        return XmlUtil.jaxbObjectToXML(element, FormsRequest.class);
     }
 
     /**
@@ -177,8 +251,8 @@ public class Smev3Service {
 
         if(adapterResponseModel.getResponse() != null){
             String xml = getXmlFromBase64(adapterResponseModel.getResponse());
-            IasmkguRequestTransformer iasmkguRequestTransformer = new IasmkguRequestTransformer();
-            EventsResponse responseType = iasmkguRequestTransformer.parseContent(xml);
+            EventsTransformer iasmkguRequestTransformer = new EventsTransformer();
+            EventsResponse responseType = iasmkguRequestTransformer.parseEventsResponseContent(xml);
             String responseNumber = String.valueOf(responseType.getPacket().getId());
             ResponseMessageModel responseMessageModel = new ResponseMessageModel();
             responseMessageModel.setResponseNumber(responseNumber);

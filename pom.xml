@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.skat.snils</groupId>
+	<groupId>com.skat.iasmkgu</groupId>
 	<artifactId>smev-iasmkgu-transformer</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>war</packaging>
 
 	<name>smev-iasmkgu-transformer</name>
@@ -29,20 +29,14 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
+			<!-- TO COMMENT FOR RUNNING IN IDEA START -->
 			<!--<exclusions>-->
 				<!--<exclusion>-->
 					<!--<groupId>org.springframework.boot</groupId>-->
 					<!--<artifactId>spring-boot-starter-logging</artifactId>-->
 				<!--</exclusion>-->
 			<!--</exclusions>-->
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.microsoft.sqlserver</groupId>
-			<artifactId>mssql-jdbc</artifactId>
+			<!-- TO COMMENT FOR RUNNING IN IDEA END -->
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -57,24 +51,28 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+			<!-- TO COMMENT FOR RUNNING IN IDEA START -->
 			<!--<exclusions>-->
 				<!--<exclusion>-->
 					<!--<groupId>org.springframework.boot</groupId>-->
 					<!--<artifactId>spring-boot-starter-logging</artifactId>-->
 				<!--</exclusion>-->
 			<!--</exclusions>-->
+			<!-- TO COMMENT FOR RUNNING IN IDEA END -->
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
 			<version>4.4.1</version>
 		</dependency>
+		<!-- TO COMMENT FOR RUNNING IN IDEA START -->
 		<!--&lt;!&ndash; marked the embedded servlet container as provided &ndash;&gt;-->
 		<!--<dependency>-->
 			<!--<groupId>org.springframework.boot</groupId>-->
 			<!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
 			<!--<scope>provided</scope>-->
 		<!--</dependency>-->
+		<!-- TO COMMENT FOR RUNNING IN IDEA END -->
 		<!-- Log4j -->
 		<dependency>
 			<groupId>log4j</groupId>

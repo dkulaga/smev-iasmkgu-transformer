@@ -23,9 +23,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="user" type="{http://vashkontrol.ru/service/rates/1.2.0}UserType"/>
- *         &lt;element name="authority" type="{http://vashkontrol.ru/service/common/types/1.1.0}AuthorityType"/>
- *         &lt;element name="service" type="{http://vashkontrol.ru/service/common/types/1.1.0}ServiceType"/>
- *         &lt;element name="procedure" type="{http://vashkontrol.ru/service/common/types/1.1.0}ProcedureType" minOccurs="0"/>
+ *         &lt;element name="authority" type="{http://vashkontrol.ru/service/common/types/1.1.0}EventsAuthorityType"/>
+ *         &lt;element name="service" type="{http://vashkontrol.ru/service/common/types/1.1.0}EventsServiceType"/>
+ *         &lt;element name="procedure" type="{http://vashkontrol.ru/service/common/types/1.1.0}EventsProcedureType" minOccurs="0"/>
  *         &lt;element name="date" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
  *         &lt;element name="received-date" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
  *         &lt;element name="okato" type="{http://vashkontrol.ru/service/common/types/1.1.0}OKATOType"/>
