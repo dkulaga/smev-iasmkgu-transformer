@@ -2,11 +2,15 @@ package com.skat.smev.iasmkgu.controllers;
 
 
 import com.skat.smev.iasmkgu.domain.AdapterResponseModel;
+import com.skat.smev.iasmkgu.domain.BaseMessageModel;
 import com.skat.smev.iasmkgu.domain.events.EventsRequestModel;
 import com.skat.smev.iasmkgu.domain.forms.FormsRequestModel;
 import com.skat.smev.iasmkgu.domain.packets.PacketsRequestModel;
 import com.skat.smev.iasmkgu.domain.rates.RatesRequestModel;
 import com.skat.smev.iasmkgu.services.Smev3Service;
+import com.skat.smev.iasmkgu.transform.BaseTransform;
+import com.skat.smev.iasmkgu.transform.FormsTransformer;
+import com.skat.smev.iasmkgu.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -82,7 +86,22 @@ public class Smev3Controller {
      */
     @PostMapping("/response/send")
     public String sendConsumerResponse(@RequestBody AdapterResponseModel adapterResponse) throws Exception {
-        return smev3Service.sendResponse(adapterResponse);
+        final BaseTransform baseTransform = new BaseTransform();
+        final BaseMessageModel baseMessageModel = baseTransform.parseResponseFromAdapter(adapterResponse);
+        return smev3Service.sendResponse(JsonUtil.stringify(baseMessageModel));
+    }
+
+    /**
+     * Метод для приема ответа от СМЭВ-адаптера, его парсинга и отправки в ВИС
+     * @param adapterResponse модель ответа от СМЭВ-адаптера
+     * @return сведения об успешной отправке либо об ошибке отправки
+     * @throws Exception
+     */
+    @PostMapping("/forms/response")
+    public String sendFormsResponse(@RequestBody AdapterResponseModel adapterResponse) throws Exception {
+        final FormsTransformer formsTransformer = new FormsTransformer();
+        final BaseMessageModel baseMessageModel = formsTransformer.parseFormsResponseFromAdapter(adapterResponse);
+        return smev3Service.sendResponse(JsonUtil.stringify(baseMessageModel));
     }
 
 

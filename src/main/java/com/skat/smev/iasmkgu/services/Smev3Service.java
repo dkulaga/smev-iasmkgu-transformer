@@ -1,13 +1,11 @@
 package com.skat.smev.iasmkgu.services;
 
 
-import com.skat.smev.iasmkgu.domain.*;
 import com.skat.smev.iasmkgu.domain.events.EventsRequestModel;
 import com.skat.smev.iasmkgu.domain.forms.FormsRequestModel;
 import com.skat.smev.iasmkgu.domain.packets.PacketsRequestModel;
 import com.skat.smev.iasmkgu.domain.rates.RatesRequestModel;
 import com.skat.smev.iasmkgu.model.events.EventsRequest;
-import com.skat.smev.iasmkgu.model.events.EventsResponse;
 import com.skat.smev.iasmkgu.model.forms.FormsRequest;
 import com.skat.smev.iasmkgu.model.packets.PacketsRequest;
 import com.skat.smev.iasmkgu.model.rates.RatesRequest;
@@ -17,7 +15,6 @@ import com.skat.smev.iasmkgu.transform.PacketsTransformer;
 import com.skat.smev.iasmkgu.transform.RatesTransformer;
 import com.skat.smev.iasmkgu.transmitter.impl.ResponseTransmitterService;
 import com.skat.smev.iasmkgu.transmitter.impl.Smev3AdapterService;
-import com.skat.smev.iasmkgu.util.JsonUtil;
 import com.skat.smev.iasmkgu.util.XmlUtil;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -133,21 +130,9 @@ public class Smev3Service {
         return "Error while sending request";
     }
 
-    /**
-     * Метод для приема ответа от СМЭВ-адаптера, его парсинга и отправки в ВИС
-     * @param adapterResponse модель ответа от СМЭВ-адаптера
-     * @return сведения об успешной отправке либо об ошибке отправки
-     * @throws Exception
-     */
-    public String sendResponse(AdapterResponseModel adapterResponse)  {
-        BaseMessageModel baseMessageModel = null;
-        String stringMessage = "";
-        try {
-            baseMessageModel = parseResponseFromAdapter(adapterResponse);
-            stringMessage = JsonUtil.stringify(baseMessageModel);
-        } catch (Exception e) {
-            LOGGER.error("Error while parsing adapter response: " + e.getMessage());
-        }
+
+
+    public String sendResponse(String stringMessage)  {
         return responseTransmitterService.sendResponse(stringMessage);
     }
 
@@ -161,21 +146,7 @@ public class Smev3Service {
         return bytesInfo != null ? DatatypeConverter.printBase64Binary(bytesInfo) : "";
     }
 
-    /**
-     * Метод выполняет преобразование строки данный из формата base64
-     * в cтроку UTF-8
-     * @param xmlBase64 строка данных
-     * @return строка данный UTF-8
-     */
-    private String getXmlFromBase64(String xmlBase64) {
-        String request = "";
-        if (xmlBase64.isEmpty()) {
-            return request;
-        }
-        final String requestInBase64 = new String(DatatypeConverter.parseBase64Binary(xmlBase64), Charset.forName("UTF-8"));
-        LOGGER.info("Decoded response from base64: " + requestInBase64);
-        return requestInBase64;
-    }
+
 
     /**
      * Метод выпоняет преобразование модели запроса от ВИС в формате SON
@@ -238,36 +209,7 @@ public class Smev3Service {
         return XmlUtil.jaxbObjectToXML(element, FormsRequest.class);
     }
 
-    /**
-     * Метод выполняет преобразование ответа от СМЭВ-адаптера
-     * из формата {@link EventsRequest} в формат {@link BaseMessageModel}
-     * @param adapterResponseModel ответ от СМЭВ-адаптера
-     * @return формированный ответ для дальнейшей отправки в ВИС
-     * @throws Exception
-     */
-    private BaseMessageModel parseResponseFromAdapter(AdapterResponseModel adapterResponseModel) throws Exception {
-        LOGGER.info("Try to parse response from adapter");
-        LOGGER.info("Response: " + adapterResponseModel);
 
-        if(adapterResponseModel.getResponse() != null){
-            String xml = getXmlFromBase64(adapterResponseModel.getResponse());
-            EventsTransformer iasmkguRequestTransformer = new EventsTransformer();
-            EventsResponse responseType = iasmkguRequestTransformer.parseEventsResponseContent(xml);
-            String responseNumber = String.valueOf(responseType.getPacket().getId());
-            ResponseMessageModel responseMessageModel = new ResponseMessageModel();
-            responseMessageModel.setResponseNumber(responseNumber);
-            responseMessageModel.setMessageId(adapterResponseModel.getMessageId());
-            return responseMessageModel;
-        } else if(adapterResponseModel.getRejects() != null && !adapterResponseModel.getRejects().isEmpty()){
-            RejectMessageModel rejectMessageModel = new RejectMessageModel();
-            rejectMessageModel.setMessageId(adapterResponseModel.getMessageId());
-            rejectMessageModel.setRejects(adapterResponseModel.getRejects());
-            return rejectMessageModel;
-        } else {
-            StatusMessageModel statusMessageModel = new StatusMessageModel();
-            statusMessageModel.setMessageId(adapterResponseModel.getMessageId());
-            statusMessageModel.setDescription(adapterResponseModel.getDescription());
-            return statusMessageModel;
-        }
-    }
+
+
 }
