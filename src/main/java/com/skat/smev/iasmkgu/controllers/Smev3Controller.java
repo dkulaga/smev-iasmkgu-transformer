@@ -12,10 +12,7 @@ import com.skat.smev.iasmkgu.transform.BaseTransform;
 import com.skat.smev.iasmkgu.transform.FormsTransformer;
 import com.skat.smev.iasmkgu.util.JsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -25,6 +22,11 @@ public class Smev3Controller {
 
     @Autowired
     private Smev3Service smev3Service;
+
+    @GetMapping("/ping")
+    public String ping(){
+        return "pong";
+    }
 
     /**
      * Метод преобразования запроса для сервиса
